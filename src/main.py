@@ -5,7 +5,12 @@ app = FastAPI()
 @app.post("/webhook")
 async def recieve_webhook(request: Request):
     body = await request.json()
-    print(body)
+    action = body["action"]
+    if action == "opened" or action == "reopened":
+        diffUrl = body["pull_request"]["diff_url"]
+        print(diffUrl)
+
+    # print(body)
     return {"recieved":True}
 
 @app.get("/")
