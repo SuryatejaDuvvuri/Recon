@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request
+from src.agent.loop import reviewPR
+from src.agent.tools import getDiff, postPR
 
 app = FastAPI()
 
@@ -8,7 +10,10 @@ async def recieve_webhook(request: Request):
     action = body["action"]
     if action == "opened" or action == "reopened":
         diffUrl = body["pull_request"]["diff_url"]
-        print(diffUrl)
+        diff  = getDiff(diffUrl)
+        result = reviewPR(diff)
+        if result:
+            postPR(body["pull_request"]["number"], result) 
 
     # print(body)
     return {"recieved":True}
